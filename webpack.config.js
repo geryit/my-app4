@@ -118,6 +118,9 @@ module.exports = {
       '@expo/vector-icons': 'expo-web',
       expo: 'expo-web',
       'react-native': 'react-native-web',
+      'react-native-web/dist/exports/MaskedViewIOS': 'react-native-web/dist/index.js',
+
+
     },
   },
 };
