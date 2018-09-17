@@ -1,109 +1,163 @@
-// import React from 'react';
-// import { StyleSheet, Text, View } from 'react-native';
-//
-// export default class App extends React.Component {
-//   render() {
-//     return (
-//       <View style={styles.container}>
-//         <Text>Opennn up App.js to start working on your app!</Text>
-//         <Text>Changes you make will automatically reload.</Text>
-//         <Text>Shake your phone to open the developer menu.</Text>
-//       </View>
-//     );
-//   }
-// }
-//
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
-
 import React from 'react';
-import { View, Text, Button } from 'react-native';
-import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
+import { Button, Image, View, Text } from 'react-native';
+import { createStackNavigator } from 'react-navigation'; // 1.0.0-beta.27
+
+class LogoTitle extends React.Component {
+  render() {
+    return (
+      <Text>logo</Text>
+    );
+  }
+}
 
 class HomeScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Home',
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+
+    return {
+      headerTitle: <LogoTitle />,
+      headerLeft: (
+        <Button
+          onPress={() => navigation.navigate('MyModal')}
+          title="Info"
+          color="#fff"
+        />
+      ),
+      headerRight: (
+        <Button onPress={params.increaseCount} title="+1" color="#fff" />
+      ),
     };
-    render() {
-        return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Home Screen</Text>
-                <Button
-                    title="Go to Details"
-                    onPress={() => {
-                        /* 1. Navigate to the Details route with params */
-                        this.props.navigation.navigate('Details', {
-                            itemId: 86,
-                            otherParam: 'anything you want here',
-                        });
-                    }}
-                />
-            </View>
-        );
-    }
+  };
+
+  componentWillMount() {
+    this.props.navigation.setParams({ increaseCount: this._increaseCount });
+  }
+
+  state = {
+    count: 0,
+  };
+
+  _increaseCount = () => {
+    this.setState({ count: this.state.count + 1 });
+  };
+
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>Home Screen</Text>
+        <Text>Count: {this.state.count}</Text>
+        <Button
+          title="Go to Details"
+          onPress={() => {
+            /* 1. Navigate to the Details route with params */
+            this.props.navigation.navigate('Details', {
+              itemId: 86,
+              otherParam: 'First Details',
+            });
+          }}
+        />
+      </View>
+    );
+  }
 }
 
 class DetailsScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        return {
-            title: navigation.getParam('otherParam', 'A Nested Details Screen'),
-            headerStyle: {
-                backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
-        };
-    };
-    render() {
-        const { navigation } = this.props;
-        const itemId = navigation.getParam('itemId', 'NO-ID');
-        const otherParam = navigation.getParam('otherParam', 'some default value');
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    const { params } = navigation.state;
 
-        return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Button
-                    title="Update the title"
-                    onPress={() => this.props.navigation.setParams({otherParam: 'Updated!'})}
-                />
-                <Text>Details Screen</Text>
-                <Text>{JSON.stringify(this.props,undefined, 2)}</Text>
-                <Text>itemId: {itemId}</Text>
-                <Text>otherParam: {JSON.stringify(otherParam)}</Text>
-                <Button
-                    title="Go to Details... again"
-                    onPress={() => this.props.navigation.push('Details')}
-                />
-            </View>
-        );
-    }
+    return {
+      title: params ? params.otherParam : 'A Nested Details Screen',
+      /* These values are used instead of the shared configuration! */
+      headerStyle: {
+        backgroundColor: navigationOptions.headerTintColor,
+      },
+      headerTintColor: navigationOptions.headerStyle.backgroundColor,
+    };
+  };
+
+  render() {
+    /* 2. Read the params from the navigation state */
+    const { params } = this.props.navigation.state;
+    const itemId = params ? params.itemId : null;
+    const otherParam = params ? params.otherParam : null;
+
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>Details Screen</Text>
+        <Text>itemId: {JSON.stringify(itemId)}</Text>
+        <Text>otherParam: {JSON.stringify(otherParam)}</Text>
+        <Button
+          title="Update the title"
+          onPress={() =>
+            this.props.navigation.setParams({ otherParam: 'Updated!' })}
+        />
+        <Button
+          title="Go to Details... again"
+          onPress={() => this.props.navigation.navigate('Details')}
+        />
+        <Button
+          title="Go back"
+          onPress={() => this.props.navigation.goBack()}
+        />
+      </View>
+    );
+  }
 }
 
-// export default createStackNavigator({
-//     Home: {
-//         screen: HomeScreen,
-//     },
-// });
+class ModalScreen extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 30 }}>This is a modal!</Text>
+        <Button
+          onPress={() => this.props.navigation.goBack()}
+          title="Dismiss"
+        />
+      </View>
+    );
+  }
+}
+
+const MainStack = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+    },
+    Details: {
+      screen: DetailsScreen,
+    },
+  },
+  {
+    initialRouteName: 'Home',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  }
+);
 
 const RootStack = createStackNavigator(
-    {
-        Home: HomeScreen,
-        Details: DetailsScreen,
+  {
+    Main: {
+      screen: MainStack,
     },
-    {
-        initialRouteName: 'Home',
-    }
+    MyModal: {
+      screen: ModalScreen,
+    },
+  },
+  {
+    mode: 'modal',
+    headerMode: 'none',
+  }
 );
 
 export default class App extends React.Component {
-    render() {
-        return <RootStack />;
-    }
+  render() {
+    return <RootStack />;
+  }
 }
