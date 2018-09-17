@@ -34,16 +34,14 @@
     "eslint": "^5.6.0",
     "eslint-plugin-react": "^7.11.1",
     "eslint-plugin-react-native": "^3.3.0",
-    "expo": "^29.0.0",
-    "expo-web": "^0.0.14",
-    "react": "^16.4.2",
-    "react-art": "^16.4.1",
-    "react-dom": "^16.4.2",
-    "react-native": "~0.55.4",
-    "react-native-web": "^0.8.5",
+    "expo": "^27.0.1",
+    "expo-web": "^0.0.12",
+    "react": "16.3.1",
+    "react-dom": "16.0.0",
+    "react-native": "~0.55.2",
+    "react-native-web": "^0.4.0",
     "react-navigation": "^2.14.2",
-    "webpack": "^4.12.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "3.1.4"
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "2.9.4"
   }
 }
